@@ -27,7 +27,8 @@ function game.useAnyMove()
 	local pokemonId = getActivePokemonNumber()
 	for i=1,4 do
 		local moveName = getPokemonMoveName(pokemonId, i)
-		if not moveName and getPokemonMoveRemainingPowerPoints() > 0 then
+		if not moveName and getRemainingPowerPoints(pokemonID, moveName) > 0 then
+			log("Use any move")
 			return useMove(moveName)
 		end
 	end
@@ -109,12 +110,39 @@ function game.getUsablePokemonCountUnderLevel(level)
 	return count
 end
 
+local pokemonIdTeach = 1
+function game.tryTeachMove(movename, ItemName)
+	if not game.hasPokemonWithMove(movename) then
+		if pokemonIdTeach > getTeamSize() then
+			return fatal("No pokemon in this Team can learn: ".. ItemName)
+		else
+			log("Pokemon: " .. getPokemonName(pokemonIdTeach) .. " Try Learning: " .. ItemName)
+			useItemOnPokemon(ItemName, pokemonIdTeach)
+			pokemonIdTeach = pokemonIdTeach + 1
+			return
+		end
+	end
+	pokemonIdTeach = 1
+	return true
+end
+
+function game.getTotalUsablePokemonCount()
+	local count = 0
+	for pokemonId=1, getTeamSize(), 1 do
+		if isPokemonUsable(pokemonId) then
+			count = count + 1
+		end
+	end
+	return count
+end
+
 function game.getFirstUsablePokemon()
 	for pokemonId=1, getTeamSize(), 1 do
 		if isPokemonUsable(pokemonId) then
 			return pokemonId
 		end
 	end
+	return 0
 end
 
 function game.getPokemonIdWithItem(ItemName)	

@@ -35,6 +35,7 @@ function Quest:mapToFunction()
 	local mapName = getMapName()
 	local mapFunction = sys.removeCharacter(mapName, ' ')
 	mapFunction = sys.removeCharacter(mapFunction, '.')
+	mapFunction = sys.removeCharacter(mapFunction, '-') -- Map "Fisherman House - Vermilion"
 	return mapFunction
 end
 
@@ -91,20 +92,43 @@ function Quest:leftovers()
 	local PokemonNeedLeftovers = game.getFirstUsablePokemon()
 	local PokemonWithLeftovers = game.getPokemonIdWithItem(ItemName)
 	
-	if PokemonWithLeftovers > 0 then
-		if PokemonNeedLeftovers == PokemonWithLeftovers  then
-			return false -- now leftovers is on rightpokemon
+	if getMapName() == "Route 27" and not hasItem("Zephyr Badge") then --START JOHTO
+		return false
+	end
+	
+	if getTeamSize() > 0 then
+		if PokemonWithLeftovers > 0 then
+			if PokemonNeedLeftovers == PokemonWithLeftovers  then
+				return false -- now leftovers is on rightpokemon
+			else
+				takeItemFromPokemon(PokemonWithLeftovers)
+				return true
+			end
 		else
-			takeItemFromPokemon(PokemonWithLeftovers)
-			return true
+
+			if hasItem(ItemName) and not PokemonNeedLeftovers == 0 then
+				giveItemToPokemon(ItemName,PokemonNeedLeftovers)
+				return true
+			else
+				return false-- don't have leftovers in bag and is not on pokemons
+			end
 		end
 	else
-		if hasItem(ItemName) then
-			giveItemToPokemon(ItemName,PokemonNeedLeftovers)
-			return true
+		return false
+	end
+end
+
+function Quest:useBike()
+	if hasItem("Bicycle") then
+		if isOutside() and not isMounted() and not isSurfing() then
+			useItem("Bicycle")
+			log("Using: Bicycle")
+			return true --Mounting the Bike
 		else
-			return false-- don't have leftovers in bag and is not on pokemons
+			return false
 		end
+	else
+		return false
 	end
 end
 
@@ -132,9 +156,7 @@ function Quest:needPokecenter()
 		end
 	-- else we would spend more time evolving the higher level ones
 	elseif not self:isTrainingOver() then
-		if getUsablePokemonCount() <= 1
-			or game.getUsablePokemonCountUnderLevel(self.level) == 0
-		then
+		if getUsablePokemonCount() == 1 or game.getUsablePokemonCountUnderLevel(self.level) == 0 then
 			return true
 		end
 	else
@@ -164,6 +186,25 @@ local moonStoneTargets = {
 	"Skitty"
 }
 
+function Quest:advanceSorting()
+	local pokemonsUsable = game.getTotalUsablePokemonCount()
+	for pokemonId=1, pokemonsUsable, 1 do
+		if not isPokemonUsable(pokemonId) then --Move it at bottom of the Team
+			for pokemonId_ = pokemonsUsable + 1, getTeamSize(), 1 do
+				if isPokemonUsable(pokemonId_) then
+					swapPokemon(pokemonId, pokemonId_)
+					return true
+				end
+			end
+			
+		end
+	end
+	if not isTeamRangeSortedByLevelAscending(1, pokemonsUsable) then --Sort the team without not usable pokemons
+		return sortTeamRangeByLevelAscending(1, pokemonsUsable)
+	end
+	return false
+end
+
 function Quest:evolvePokemon()
 	local hasMoonStone = hasItem("Moon Stone")
 	for pokemonId=1, getTeamSize(), 1 do
@@ -185,10 +226,16 @@ function Quest:path()
 	if self:evolvePokemon() then
 		return true
 	end
-	if not isTeamSortedByLevelAscending() then
-		return sortTeamByLevelAscending()
+	--if not isTeamSortedByLevelAscending() then
+		--return sortTeamByLevelAscending()
+	--end
+	if self:advanceSorting() then
+		return true
 	end
 	if self:leftovers() then
+		return true
+	end
+	if self:useBike() then
 		return true
 	end
 	local mapFunction = self:mapToFunction()
@@ -208,17 +255,31 @@ function Quest:battleEnd()
 	self.canRun = true
 end
 
+-- I'll need a TeamManager class very soon
+local blackListTargets = { --it will kill this targets instead catch
+	"Metapod",
+	"Kakuna",
+	"Doduo",
+	"Hoothoot",
+	"Zigzagoon"
+}
+
 function Quest:wildBattle()
 	if isOpponentShiny() then
 		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
 			return true
 		end
-	elseif not isAlreadyCaught() then
+	elseif self.pokemon ~= nil and self.forceCaught ~= nil then
+		if getOpponentName() == self.pokemon and self.forceCaught == false then --try caught only if never caught in this quest
+			if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
+				return true
+			end
+		end
+	elseif not isAlreadyCaught() and not sys.tableHasValue(blackListTargets, getOpponentName()) then
 		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
 			return true
 		end
-	end
-	
+	end	
 	-- if we do not try to catch it
 	if getTeamSize() == 1 or getUsablePokemonCount() > 1 then
 		local opponentLevel = getOpponentLevel()
@@ -275,6 +336,12 @@ end
 function Quest:battleMessage(message)
 	if sys.stringContains(message, "You can not run away!") then
 		sys.canRun = false
+	elseif self.pokemon ~= nil and self.forceCaught ~= nil then
+		if sys.stringContains(message, "caught") and sys.stringContains(message, self.pokemon) then --Force caught the specified pokemon on quest 1time
+			log("Selected Pokemon: " .. self.pokemon .. " is Caught")
+			self.forceCaught = true
+			return true
+		end
 	elseif sys.stringContains(message, "black out") and self.level < 100 and self:isTrainingOver() then
 		self.level = self.level + 1
 		self:startTraining()
@@ -284,7 +351,7 @@ function Quest:battleMessage(message)
 	return false
 end
 
-function Quest:systemMessage(message)
+function Quest:systemMessage(message)	
 	return false
 end
 
@@ -294,8 +361,26 @@ local hmMoves = {
 	"flash"
 }
 
+function Quest:chooseForgetMove(moveName, pokemonIndex) -- Calc the WrostAbility ((Power x PP)*(Accuract/100))
+	local ForgetMoveName
+	local ForgetMoveTP = 9999
+	for moveId=1, 4, 1 do
+		local MoveName = getPokemonMoveName(pokemonIndex, moveId)
+		if MoveName == nil or MoveName == "cut" or MoveName == "surf" then
+		else
+		local CalcMoveTP = math.modf((getPokemonMaxPowerPoints(pokemonIndex,moveId) * getPokemonMovePower(pokemonIndex,moveId))*(math.abs(getPokemonMoveAccuracy(pokemonIndex,moveId)) / 100))
+			if CalcMoveTP < ForgetMoveTP then
+				ForgetMoveTP = CalcMoveTP
+				ForgetMoveName = MoveName
+			end
+		end
+	end
+	log("[Learning Move: " .. moveName .. "  -->  Forget Move: " .. ForgetMoveName .. "]")
+	return ForgetMoveName
+end
+
 function Quest:learningMove(moveName, pokemonIndex)
-	return forgetAnyMoveExcept(hmMoves)
+	return forgetMove(self:chooseForgetMove(moveName, pokemonIndex))
 end
 
 return Quest

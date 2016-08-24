@@ -35,7 +35,6 @@ local ThunderBadgeQuest = Quest:new()
 
 function ThunderBadgeQuest:new()
 	o = Quest.new(ThunderBadgeQuest, name, description, level, dialogs)
-	o.pokemonId = 1
 	o.puzzle = {}
 	o.firstSwitchFound     = false
 	o.firstSwitchActivated = false
@@ -54,7 +53,7 @@ function ThunderBadgeQuest:isDoable()
 end
 
 function ThunderBadgeQuest:isDone()
-	if getMapgetMapName == "Vermilion City 2" or getMapgetMapName == "SSAnne 1F" or getMapName() == "Route 11" then
+	if getMapName() == "Vermilion City 2" or getMapName() == "SSAnne 1F" or getMapName() == "Route 11" then
 		return true
 	else
 		return false
@@ -130,16 +129,8 @@ function ThunderBadgeQuest:VermilionCity()
 	elseif not hasItem("HM01 - Cut") then -- Need do SSanne Quest
 		return moveToCell(40, 67) -- Enter on SSAnne
 	elseif not hasItem("Thunder Badge") then
-		if game.hasPokemonWithMove("Cut") then
+		if game.tryTeachMove("Cut","HM01 - Cut") == true then
 			return moveToMap("Vermilion Gym")
-		else
-			if self.pokemonId < getTeamSize() then
-				useItemOnPokemon("HM01 - Cut", self.pokemonId)
-				log("Pokemon: " .. self.pokemonId .. " Try Learning: HM01 - Cut")
-				self.pokemonId = self.pokemonId + 1
-			else
-				fatal("No pokemon in this team can learn - Cut")
-			end
 		end
 	else
 		return moveToMap("Route 11")

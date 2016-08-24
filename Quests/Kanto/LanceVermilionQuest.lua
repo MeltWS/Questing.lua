@@ -19,6 +19,10 @@ function LanceVermilionQuest:isDoable()
 	return self:hasMap()
 end
 
+function LanceVermilionQuest:isDone()
+	return getMapName() == "Pokecenter Vermilion"
+end
+
 function LanceVermilionQuest:VermilionCity2()
 	return talkToNpcOnCell(44, 30)
 end

@@ -5,7 +5,7 @@
 
 local pc = {}
 
-local sys = require("Libs/syslib
+local sys = require("Libs/syslib")
 
 function pc.isValidIndex(boxIndex, pokemonIndex)
 	if getCurrentBoxId() == boxIndex and pokemonIndex <= getCurrentBoxSize() then
