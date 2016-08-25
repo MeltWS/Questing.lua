@@ -1,4 +1,5 @@
 # Questing.lua
 A Lua script for PROShine that plays Pokemon Revolution Online for you from the very Start to as far as possible.
 
-[Questing.lua](http://g0ldpro.github.io/Questing.lua/)
+Credit to G0ld For the Original Project, Rympe and WiWi33[NetPaPa] for Updating it.
+

@@ -85,6 +85,9 @@ end
 
 
 function FromLittlerootToWoodsQuest:LittlerootTownTruck()
+	if not isAutoEvolve() then
+		return enableAutoEvolve() -- At the moment you will need my custom proshine for this -> github MeltWS.
+	end
 	return moveToMap("Littleroot Town")
 end
 
@@ -118,11 +121,11 @@ function FromLittlerootToWoodsQuest:LabLittlerootTown()
 			talkToNpcOnCell(10,4)
 	end
 	if (getTeamSize() == 1 or  getTeamSize() == 2)  then
-	if isNpcVisible("#261") then 
-		talkToNpc ("#261")
-	else moveToMap ("Littleroot Town")
-end
-end
+		if isNpcVisible("#261") then 
+			talkToNpc ("#261")
+		else moveToMap ("Littleroot Town")
+		end
+	end
 end
 
 
@@ -160,7 +163,7 @@ end
 
 
 function FromLittlerootToWoodsQuest:PokecenterOldaleTown()
-	return self:pokecenter("Oldale Town")
+	self:pokecenter("Oldale Town")
 end
 
 

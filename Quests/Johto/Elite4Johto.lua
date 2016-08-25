@@ -17,21 +17,18 @@ local teamManaged = false
 
 local dialogs = {
 	leagueDefeated = Dialog:new({ 
-		"I am already the Champ, don't need to go in there..."
+		"I am already the Champ, don't need to go in there...",
+		"I see you are Champion of Johto, you may continue.",
+		"Congratulations, Johto Champion!"
 	}),
-	will = Dialog:new({ 
-		"xxx"
+	guardMtSilver = Dialog:new({
+		"You are not ready to go to mount Silver yet!"
 	}),
-	koga = Dialog:new({ 
-		"xxx"
-	}),
-	karen = Dialog:new({ 
-		"Good luck on facing"
-	}),
-	bruno = Dialog:new({ 
-		"xxx"
-	}),
-	champ = Dialog:new({ 
+	leaderDone = Dialog:new({ 
+		"You defeated me, you are amazing. I wish you good luck in the league..",
+		"You defeated me, you are amazing.",
+		"Good luck on facing the Champion!",
+		"You defeated me, you are amazing.",
 		"Go, your destiny waits you!"
 	})
 }
@@ -95,20 +92,11 @@ function Elite4Johto:Route29()
 end
 
 function Elite4Johto:NewBarkTown()
-	return moveToMap("Route 27")
-end
-
-function Elite4Johto:NewBarkTownPlayerHouseBedroom()
-	dialogs.leagueDefeated.state = true
-	if hasItem("Escape Rope") then
-		return useItem("Escape Rope") -- tp Back to indigo plateau center
+	if dialogs.leagueDefeated.state and hasItem("Escape Rope") then
+		return useItem("Escape Rope") -- tp Back to indigo Plateau center
 	else
-		return moveToMap("New Bark Town Player House")
+		return moveToMap("Route 27")
 	end
-end
-
-function Elite4Johto:NewBarkTownPlayerHouse()
-	return moveToMap("New Bark Town")
 end
 
 function Elite4Johto:Route27()
@@ -128,10 +116,12 @@ function Elite4Johto:Route26()
 end
 
 function Elite4Johto:PokemonLeagueReceptionGate()
-	if checkRattata() then
+	if checkRattata() or not isNpcOnCell(2,11) then -- need check guards
 		 return moveToMap("Victory Road Kanto 1F")
+	elseif dialogs.guardMtSilver.state then 
+		return moveToMap("Route 22")
 	else
-		 return moveToMap("Route 22")
+		return talkToNpcOnCell(2,11) --guard MtSilver
 	end		
 end
 
@@ -297,33 +287,140 @@ function Elite4Johto:VictoryRoadKanto1F()
 end
 
 function Elite4Johto:VictoryRoadKanto2F()
+	if not self:isTrainingOver() or not self:canBuyReviveItems() then
+		return moveToRectangle(12,27,28,30) -- could add zone exp
+	end
 	return moveToCell(14,9) 
 end
 
 function Elite4Johto:VictoryRoadKanto3F()
+	if not self:isTrainingOver() or not self:canBuyReviveItems() then
+		return moveToCell(29,17)
+	end
 	return moveToMap("Indigo Plateau")
 end
 
 function Elite4Johto:IndigoPlateau()
-	if isNpcOnCell(10,13) then
+	if not self:needPokecenter() and not self:canBuyReviveItems() then
+		return moveToMap("Victory Road Kanto 3F")
+	elseif isNpcOnCell(10,13) then
 		talkToNpcOnCell(10,13)
-	elseif not dialogs.leagueDefeated.state then
+	elseif not dialogs.leagueDefeated.state or not checkRattata() then
 		return moveToMap("Indigo Plateau Center Johto")
 	elseif dialogs.leagueDefeated.state and isNpcOnCell(21,10) then -- Joey
-		return talkToNpcOnCell(21,10) -- Joey
+			if not (getPokemonName(1) == "Rattata") then
+				return swapPokemonWithLeader("Rattata")
+			else
+				pushDialogAnswer(1)
+				return talkToNpcOnCell(21,10)
+			end
 	else
-		return talkToNpcOnCell(7,21)
+		-- enableAutoEvolve() -- At the moment you will need my custom proshine for this -> github MeltWS.
+		pushDialogAnswer(1)
+		return talkToNpcOnCell(21,7) -- to hoenn
 	end
 end
 
 function Elite4Johto:IndigoPlateauCenterJohto()
+	dialogs.leaderDone.state = false
 	self.registeredPokecenter = "Indigo Plateau Center Johto"
 	if self:needPokecenter() or not game.isTeamFullyHealed() then
 		return talkToNpcOnCell(4,22)
-	elseif leagueDefeated then
-		return moveToMap("Indigo Plateau")
-	elseif (getMoney() > 1500) and (getItemQuantity("Revive") < self.qnt_revive or getItemQuantity("Hyper Potion") < self.qnt_hyperpot) then
-		if not isShopOpen() then	
+	elseif dialogs.leagueDefeated.state or not self:canBuyReviveItems() then
+		if not checkRattata() then
+			fatal("Need PC lib FIX to get Rattata From PC") -- get Rattata From PC
+		else
+			return moveToMap("Indigo Plateau")
+		end
+	elseif self:buyReviveItems() ~= false then
+		return
+	else
+		return moveToCell(10,3) -- to League
+	end
+end
+
+function Elite4Johto:EliteFourWillRoom()
+	if self:useReviveItems() ~= false then
+		return
+	elseif not dialogs.leaderDone.state then	
+		return talkToNpcOnCell(6,12) 
+	else
+		dialogs.leaderDone.state = false
+		return moveToCell(6,3)
+	end
+end
+
+function Elite4Johto:EliteFourKogaRoom()
+	if self:useReviveItems() ~= false then
+		return
+	elseif not dialogs.leaderDone.state then
+		return talkToNpcOnCell(20,24) 
+	else
+		dialogs.leaderDone.state = false
+		return moveToCell(20,12)
+	end
+end
+
+function Elite4Johto:EliteFourBrunoRoomJohto()
+	if self:useReviveItems() ~= false then
+		return
+	elseif not dialogs.leaderDone.state then
+		return talkToNpcOnCell(21,24) 
+	else
+		dialogs.leaderDone.state = false
+		return moveToCell(21,14)
+	end
+end
+
+
+function Elite4Johto:EliteFourKarenRoom()
+	if self:useReviveItems() ~= false then
+		return
+	elseif not dialogs.leaderDone.state then
+		return talkToNpcOnCell(6,14) 
+	else
+		dialogs.leaderDone.state = false
+		return moveToCell(6,3)
+	end
+end
+
+function Elite4Johto:EliteFourChampionRoomJohto()
+	if not self:useReviveItems() ~= false and not dialogs.leagueDefeated.state then
+		return
+	elseif not dialogs.leaderDone.state then
+		return talkToNpcOnCell(6,15) 
+	else
+		dialogs.leagueDefeated.state = true
+		return talkToNpcOnCell(6,4)
+	end
+end
+
+function Elite4Johto:useReviveItems() --Return false if team don't need heal
+	if not hasItem("Revive") or not hasItem("Hyper Potion") then
+		return false
+	end
+	for pokemonId=1, getTeamSize(), 1 do
+		if getPokemonHealth(pokemonId) == 0 then
+			return useItemOnPokemon("Revive", pokemonId)
+		end
+		if getPokemonHealthPercent(pokemonId) < 70 then
+			return useItemOnPokemon("Hyper Potion", pokemonId)
+		end		
+	end
+	return false
+end
+
+function Elite4Johto:canBuyReviveItems()
+	local bag_revive = getItemQuantity("Revive")
+	local bag_hyperpot = getItemQuantity("Hyper Potion")
+	local cost_revive = (self.qnt_revive - bag_revive) * 1500
+	local cost_hyperpot = (self.qnt_hyperpot - bag_hyperpot) * 1200
+	return getMoney() > (cost_hyperpot + cost_revive)
+end
+
+function Elite4Johto:buyReviveItems() --return false if all items are on the bag (32x Revives 32x HyperPotions)
+	if getItemQuantity("Revive") < self.qnt_revive or getItemQuantity("Hyper Potion") < self.qnt_hyperpot then
+		if not isShopOpen() then
 			return talkToNpcOnCell(16,22)
 		else
 			if getItemQuantity("Revive") < self.qnt_revive then
@@ -334,84 +431,21 @@ function Elite4Johto:IndigoPlateauCenterJohto()
 			end
 		end
 	else
-		return moveToCell(10,3)
-	end
-end
-
-function Elite4Johto:EliteFourWillRoom()
-	if self:useReviveItems() ~= false then
-		return
-	elseif not dialogs.will.state then	
-		if not game.inRectangle(6,13) then
-			return moveToCell(6,13)
-		else 
-			dialogs.will.state = true
-			return talkToNpcOnCell(6,12) 
-		end
-	else
-		return moveToCell(6,3)
-	end
-end
-
-function Elite4Johto:EliteFourKogaRoom()
-	if self:useReviveItems() ~= false then
-		return
-	elseif not dialogs.koga.state then
-		if not not game.inRectangle(20,25) then
-			return moveToCell(20,25)
-		else
-			dialogs.koga.state = true 
-			return talkToNpcOnCell(20,24) 
-		end
-	else
-		return moveToCell(20,12)
-	end
-end
-
-function Elite4Johto:EliteFourBrunoRoomJohto()
-	if self:useReviveItems() ~= false then
-		return
-	elseif not dialogs.bruno.state then
-		if not game.inRectangle(22,25) then	
-			return moveToCell(22,25)
-		else
-			dialogs.bruno.state = true
-			return talkToNpcOnCell(22,24) 
-		end
-	else
-		return moveToCell(21,14)
-	end
-end
-
-
-function Elite4Johto:EliteFourKarenRoomJohto()
-	if self:useReviveItems() ~= false then
-		return
-	elseif not dialogs.karen.state then
-		return talkToNpcOnCell(6,14) 
-	else
-		return moveToCell(6,3)
-	end
-end
-
-function Elite4Johto:EliteFourChampionRoomJohto()
-	if self:useReviveItems() ~= false then
-		return
-	elseif not dialogs.champ.state then
-		return talkToNpcOnCell(6,15) 
-	else
-		return talkToNpcOnCell(6,4)
+		return false
 	end
 end
 
 function checkRattata()
-    if getPokemonName(1) == "Rattata" and getPokemonLevel(1) >= 80
-    or getPokemonName(2) == "Rattata" and getPokemonLevel(2) >= 80
-    or getPokemonName(3) == "Rattata" and getPokemonLevel(3) >= 80
-    or getPokemonName(4) == "Rattata" and getPokemonLevel(4) >= 80
-    or getPokemonName(5) == "Rattata" and getPokemonLevel(5) >= 80
-    or getPokemonName(6) == "Rattata" and getPokemonLevel(6) >= 80 then
-        return true
+	local teamSize = getTeamSize()
+	if isAutoEvolve() then -- At the moment you will need my custom proshine for this -> github MeltWS.
+		return disableAutoEvolve()
+	end
+	for i=1,teamSize,1 do
+    	if getPokemonName(i) == "Rattata" then
+			if (getPokemonLevel(i) >= 80) then		
+	    		return true
+			end
+		end
     end
     return false
 end

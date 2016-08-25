@@ -259,6 +259,10 @@ end
 local blackListTargets = { --it will kill this targets instead catch
 	"Metapod",
 	"Kakuna",
+	"Silcoon",
+	"Cascoon",
+	"Seedot",
+	"Surskit",
 	"Doduo",
 	"Hoothoot",
 	"Zigzagoon"
