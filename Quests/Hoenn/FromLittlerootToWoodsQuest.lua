@@ -86,7 +86,7 @@ end
 
 function FromLittlerootToWoodsQuest:LittlerootTownTruck()
 	if not isAutoEvolve() then
-		return enableAutoEvolve() -- custom proshine API
+		return enableAutoEvolve() -- custom proshine API -> MeltWS/proshine
 	end
 	return moveToMap("Littleroot Town")
 end
