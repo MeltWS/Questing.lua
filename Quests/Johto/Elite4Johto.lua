@@ -315,7 +315,6 @@ function Elite4Johto:IndigoPlateau()
 				return talkToNpcOnCell(21,10)
 			end
 	else
-		-- enableAutoEvolve() -- At the moment you will need my custom proshine for this -> github MeltWS.
 		pushDialogAnswer(1)
 		return talkToNpcOnCell(21,7) -- to hoenn
 	end
@@ -437,7 +436,7 @@ end
 
 function checkRattata()
 	local teamSize = getTeamSize()
-	if isAutoEvolve() then -- At the moment you will need my custom proshine for this -> github MeltWS.
+	if isAutoEvolve() then -- custom proshine API
 		return disableAutoEvolve()
 	end
 	for i=1,teamSize,1 do
