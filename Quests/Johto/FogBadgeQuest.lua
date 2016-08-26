@@ -105,10 +105,10 @@ function FogBadgeQuest:Route36()
 end
 
 function FogBadgeQuest:Route37()
-	if self:needPokecenter() or not self.registeredPokecenter == "Pokecenter Ecruteak" then
-		moveToMap("Ecruteak City")
+	if self:needPokecenter() or self.registeredPokecenter ~= "Pokecenter Ecruteak" then
+		return moveToMap("Ecruteak City")
 	elseif not self:isTrainingOver() then 
-		moveToGrass()
+		return moveToGrass()
 	end
 end
 

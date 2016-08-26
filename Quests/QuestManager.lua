@@ -59,9 +59,9 @@ local StoneBadgeQuest 			 = require('Quests/Hoenn/StoneBadgeQuest')
 local getSLetter 				 = require('Quests/Hoenn/getSLetter')
 local KnuckleBadgeQuest 		 = require('Quests/Hoenn/KnuckleBadgeQuest')
 local toMauville 				 = require('Quests/Hoenn/toMauville')
--- local DynamoBadge				 = require('Quests/Hoenn/DynamoBadge')
--- local ToLavaridgeTown	  		 = require('Quests/Hoenn/ToLavaridgeTown')
--- local ToBalanceBadge 		     = require('Quests/Hoenn/ToBalanceBadge')
+local DynamoBadge				 = require('Quests/Hoenn/DynamoBadge')
+local ToLavaridgeTown	  		 = require('Quests/Hoenn/ToLavaridgeTown')
+local ToBalanceBadge 		     = require('Quests/Hoenn/ToBalanceBadge')
 -- local ToFortreeCity  		     = require('Quests/Hoenn/ToFortreeCity')
 -- local GetTheOrbs 				 = require('Quests/Hoenn/GetTheOrbs')
 -- local MagmaHideout			     = require('Quests/Hoenn/MagmaHideout')
@@ -124,9 +124,9 @@ local quests = {
 	getSLetter:new(),
 	KnuckleBadgeQuest:new(),
 	toMauville:new(),
-	--DynamoBadge:new(),
-	--ToLavaridgeTown:new(),
-	--ToBalanceBadge:new(),
+	DynamoBadge:new(),
+	ToLavaridgeTown:new(),
+	ToBalanceBadge:new(),
 	-- ToFortreeCity:new(),
 	-- GetTheOrbs:new(),
 	-- MagmaHideout:new(),

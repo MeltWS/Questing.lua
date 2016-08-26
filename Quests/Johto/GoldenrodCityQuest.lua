@@ -11,7 +11,9 @@ local Dialog = require "Quests/Dialog"
 
 local name		  = 'Goldenrod City'
 local description = " Complete Guard's Quest"
-local level = 20
+local level = 23
+local basementOpen = false
+local checkBasementOpen = false
 
 local dialogs = {
 	guardQuestPart1 = Dialog:new({ 
@@ -35,8 +37,8 @@ local dialogs = {
 		"Ugh, where is this store's manager? He usually delivers a drink at this juncture, and I am parched!",
 		"Zzz-zzzzz-zzzzz....."
 	}),
-	UndergroundWarehouseStart = Dialog:new({ -- unused for now, can be used to walk to (15,10) and trigger the crate event the first time if needed.
-		"And Team Rocket agents are patrolling around the area...",
+	UndergroundWarehouseStart = Dialog:new({
+		"And Team Rocket agents are patrolling around the area..."
 	}),
 	UndergroundWarehouseFinish = Dialog:new({ 
 		"Now to see what is stored beyond these doors",
@@ -288,26 +290,15 @@ function GoldenrodCityQuest:new()
 end
 
 function GoldenrodCityQuest:isDoable()
-	if self:hasMap() then
-		if getMapName() == "Goldenrod City" then 
-			return isNpcOnCell(48,34)
-		else
-			return true
-		end
-	end
-	return false
+	return self:hasMap() and not hasItem("Plain Badge")
 end
 
 function GoldenrodCityQuest:isDone()
-	if getMapName() == "Goldenrod City" and not isNpcOnCell(48,34) then
-		return true
-	else
-		return false
-	end
+	return hasItem("Plain Badge")
 end
 
 function GoldenrodCityQuest:PokecenterGoldenrod()
-	if hasItem("Basement Key") and not (hasPokemonInTeam("Oddish") or hasPokemonInTeam("Bellsprout")) and not hasItem("spruzzino") and dialogs.guardQuestPart2.state and not dialogs.guardQuestPart3.state then
+	if hasItem("Basement Key") and not hasPokemonInTeam("Oddish") and dialogs.guardQuestPart2.state then
 		fatal("Need Wait FIX for ProShine API [ usePC() ] -  No other quests for now")
 	else
 		self:pokecenter("Goldenrod City")
@@ -317,12 +308,16 @@ end
 function GoldenrodCityQuest:GoldenrodCity()
 	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Goldenrod" then
 		return moveToMap("Pokecenter Goldenrod")
+	elseif not self:isTrainingOver() then
+		return moveToMap("Route 34")
 	elseif hasItem("Bike Voucher") then
 		return moveToMap("Goldenrod City Bike Shop")
-	elseif hasItem("Basement Key") and not hasItem("spruzzino") and dialogs.guardQuestPart2.state and not dialogs.guardQuestPart3.state then --get Oddish on PC and start leveling
-		if hasPokemonInTeam("Oddish") or hasPokemonInTeam("Bellsprout") then
+	elseif hasItem("Basement Key") and dialogs.guardQuestPart2.state then --get Oddish on PC and start leveling
+		if hasPokemonInTeam("Oddish") or hasPokemonInTeam("Gloom") then
 			if not game.hasPokemonWithMove("Sleep Powder") then
 				return moveToMap("Route 34")
+			elseif not checkBasementOpen or basementOpen then
+				return moveToMap("Goldenrod Underground Entrance Top")
 			else
 				return moveToMap("Goldenrod Mart 1")
 			end
@@ -352,6 +347,8 @@ end
 function GoldenrodCityQuest:GoldenrodUndergroundEntranceTop()
 	if dialogs.UndergroundDefeated.state then
 		return moveToMap("Goldenrod City")
+	elseif not checkBasementOpen then
+		return moveToMap("Goldenrod Underground Path")
 	end
 	 dialogs.guardQuestPart1.state = false
 	if dialogs.directorQuestPart1.state then
@@ -363,8 +360,12 @@ function GoldenrodCityQuest:GoldenrodUndergroundEntranceTop()
 end
 
 function GoldenrodCityQuest:GoldenrodUndergroundPath()
+	checkBasementOpen = true
 	if isNpcOnCell(7,2) then
 		return talkToNpcOnCell(7,2) --Item: TM-46   Psywave
+	elseif not isNpcOnCell(17,10) and not dialogs.UndergroundDefeated.state then
+		basementOpen = true
+		return moveToMap("Goldenrod Underground Basement")
 	elseif dialogs.directorQuestPart1.state or dialogs.UndergroundDefeated.state then
 		return moveToMap("Goldenrod Underground Entrance Top")
 	else
@@ -381,14 +382,14 @@ function GoldenrodCityQuest:GoldenrodCityHouse2()
 end
 
 function GoldenrodCityQuest:Route34()
-	if not self:isTrainingOver() or self:needPokecenter() then
+	if not self:isTrainingOver() and not self:needPokecenter() then
 		return moveToGrass()
 	end
 	return moveToMap("Goldenrod City")
 end
 
 function GoldenrodCityQuest:GoldenrodMart1()
-	if hasItem("Basement Key") and game.hasPokemonWithMove("Sleep Powder") and not hasItem("spruzzino") and dialogs.guardQuestPart2.state and not dialogs.guardQuestPart3.state then
+	if hasItem("Basement Key") and game.hasPokemonWithMove("Sleep Powder") and not hasItem("spruzzino") and dialogs.guardQuestPart2.state then
 		return moveToMap("Goldenrod Mart Elevator")
 	end
 	return moveToMap("Goldenrod City")
@@ -411,6 +412,7 @@ function GoldenrodCityQuest:GoldenrodMartElevator()
 end
 
 function GoldenrodCityQuest:GoldenrodMart6()
+	dialogs.guardElevatorB1F.state = false -- in case of black out	
 	if not hasItem("Fresh Water") then
 		if not isShopOpen() then
 			return talkToNpcOnCell(12,3)
@@ -426,8 +428,8 @@ function GoldenrodCityQuest:GoldenrodMartB1F()
 	dialogs.guardElevatorB1F.state = false -- in case of black out
 	if isNpcOnCell(13,8) then
 		local sleepID
-		for i=1,6 do
-			if hasMove("Sleep Powder") then
+		for i=1,6,1 do
+			if hasMove(i,"Sleep Powder") then
 				sleepID = i
 			end
 		end
@@ -440,9 +442,13 @@ function GoldenrodCityQuest:GoldenrodMartB1F()
 end
 
 function GoldenrodCityQuest:UndergroundWarehouse()
+	local talk = false
 	local current = UndergroundCratesNPC["Current"]
 	if dialogs.UndergroundWarehouseFinish.state then
-		return moveToMap("Goldenrod Underground Basement")
+		return moveToMap("Goldenrod Underground Basement") -- reset the first time. Anti stuck, dialogs only run one time.
+	elseif dialogs.UndergroundWarehouseStart.state then 
+		dialogs.UndergroundWarehouseStart = false
+		return moveToMap("Goldenrod Mart B1F")
 	else 
 		local NPCx = UndergroundCratesNPC[current][1]
 		local NPCy = UndergroundCratesNPC[current][2]
@@ -452,17 +458,23 @@ function GoldenrodCityQuest:UndergroundWarehouse()
 			if not (getPlayerX() == locX) and (getPlayerY() == locY) then
 				return moveToCell(locX,locY)
 			end
-			talkToNpcOnCell(NPCx, NPCy)
-		end
-		if (current < 104) then
-			UndergroundCratesNPC["Current"] = current + 1 -- max 70
+			talk = true
+		end	
+		if (current > 103) then
+			moveToMap("Goldenrod Mart B1F") -- reset the room
 		else
-			fatal("Could not find enought pokemon in crates")
+			UndergroundCratesNPC["Current"] = current + 1 -- max 70
+			if talk then
+				return talkToNpcOnCell(NPCx, NPCy)
+			end	
 		end
 	end
 end
 
 function GoldenrodCityQuest:GoldenrodUndergroundBasement() -- open full path in case of black out, will break if user dc or change script before opening the full path.TY
+	if not basementOpen then
+		basementOpen = true
+	end
 	local current = LeversOrder["Current"]
 	if dialogs.LeverC.state and dialogs.LeverD.state and current < 4 then
 		dialogs.LeverC.state = false
@@ -474,8 +486,11 @@ function GoldenrodCityQuest:GoldenrodUndergroundBasement() -- open full path in 
 		dialogs.LeverD.state = false
 		LeversOrder["Current"] = 7 
 	end
-	if dialogs.UndergroundDefeated.state then
+	if not isNpcOnCell(5,4) then
+		dialogs.UndergroundDefeated.state = true -- NPC vanish, we set it in case of DC
 		return moveToMap("Goldenrod Underground Path")
+	elseif not isNpcOnCell(4,10) then
+		return talkToNpcOnCell(5,4)
 	elseif not dialogs.LeverA.state then
 		pushDialogAnswer(1)
 		return talkToNpc("Lever A")
@@ -493,9 +508,7 @@ function GoldenrodCityQuest:GoldenrodUndergroundBasement() -- open full path in 
 		return talkToNpc("Lever E")				
 	elseif not dialogs.LeverF.state then
 		pushDialogAnswer(1)
-		return talkToNpc("Lever F")		
-	else
-		talkToNpcOnCell(5,4)
+		return talkToNpc("Lever F")	
 	end
 end
 return GoldenrodCityQuest

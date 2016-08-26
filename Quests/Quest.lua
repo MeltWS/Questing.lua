@@ -92,7 +92,8 @@ function Quest:leftovers()
 	local PokemonNeedLeftovers = game.getFirstUsablePokemon()
 	local PokemonWithLeftovers = game.getPokemonIdWithItem(ItemName)
 	
-	if getMapName() == "Route 27" and not hasItem("Zephyr Badge") then --START JOHTO
+	if getMapName() == "Route 27" and not hasItem("Zephyr Badge") --START JOHTO
+	or getMapName() == "Indigo Plateau" and not hasItem("Stone Badge") then -- START HOENN
 		return false
 	end
 	
@@ -105,7 +106,6 @@ function Quest:leftovers()
 				return true
 			end
 		else
-
 			if hasItem(ItemName) and not PokemonNeedLeftovers == 0 then
 				giveItemToPokemon(ItemName,PokemonNeedLeftovers)
 				return true
@@ -261,6 +261,7 @@ local blackListTargets = { --it will kill this targets instead catch
 	"Kakuna",
 	"Silcoon",
 	"Cascoon",
+	"Ralts",
 	"Seedot",
 	"Surskit",
 	"Doduo",
@@ -359,20 +360,13 @@ function Quest:systemMessage(message)
 	return false
 end
 
-local hmMoves = {
-	"cut",
-	"surf",
-	"flash"
-}
-
 function Quest:chooseForgetMove(moveName, pokemonIndex) -- Calc the WrostAbility ((Power x PP)*(Accuract/100))
 	local ForgetMoveName
 	local ForgetMoveTP = 9999
 	for moveId=1, 4, 1 do
 		local MoveName = getPokemonMoveName(pokemonIndex, moveId)
-		if MoveName == nil or MoveName == "cut" or MoveName == "surf" then
-		else
-		local CalcMoveTP = math.modf((getPokemonMaxPowerPoints(pokemonIndex,moveId) * getPokemonMovePower(pokemonIndex,moveId))*(math.abs(getPokemonMoveAccuracy(pokemonIndex,moveId)) / 100))
+		if not MoveName == nil or not game.keepMove(MoveName) then
+			local CalcMoveTP = math.modf((getPokemonMaxPowerPoints(pokemonIndex,moveId) * getPokemonMovePower(pokemonIndex,moveId))*(math.abs(getPokemonMoveAccuracy(pokemonIndex,moveId)) / 100))
 			if CalcMoveTP < ForgetMoveTP then
 				ForgetMoveTP = CalcMoveTP
 				ForgetMoveName = MoveName

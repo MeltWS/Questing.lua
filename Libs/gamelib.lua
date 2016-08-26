@@ -153,5 +153,23 @@ function game.getPokemonIdWithItem(ItemName)
 	end
 	return 0
 end
-	
+
+local keepMoves = { -- moves not to forget.
+	"cut",
+	"surf",
+	"flash",
+	"Rock Smash",
+	"dive",
+	"Sleep Powder"
+}
+
+function game.keepMove(moveName)
+	for _, keepMove in pairs(keepMoves) do
+		if keepMove == moveName then
+			return true
+		end
+	end
+	return false
+end
+
 return game

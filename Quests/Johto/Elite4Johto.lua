@@ -304,7 +304,7 @@ function Elite4Johto:IndigoPlateau()
 	if not self:needPokecenter() and not self:canBuyReviveItems() then
 		return moveToMap("Victory Road Kanto 3F")
 	elseif isNpcOnCell(10,13) then
-		talkToNpcOnCell(10,13)
+		return talkToNpcOnCell(10,13)
 	elseif not dialogs.leagueDefeated.state or not checkRattata() then
 		return moveToMap("Indigo Plateau Center Johto")
 	elseif dialogs.leagueDefeated.state and isNpcOnCell(21,10) then -- Joey
@@ -314,9 +314,13 @@ function Elite4Johto:IndigoPlateau()
 				pushDialogAnswer(1)
 				return talkToNpcOnCell(21,10)
 			end
-	else
+	else -- TO HOENN
+		local PokemonWithLeftovers = game.getPokemonIdWithItem("Leftovers") 
+		if PokemonWithLeftovers > 0 then
+			return takeItemFromPokemon(PokemonWithLeftovers)
+		end
 		pushDialogAnswer(1)
-		return talkToNpcOnCell(21,7) -- to hoenn
+		return talkToNpcOnCell(21,7)
 	end
 end
 
@@ -440,10 +444,8 @@ function checkRattata()
 		return disableAutoEvolve()
 	end
 	for i=1,teamSize,1 do
-    	if getPokemonName(i) == "Rattata" then
-			if (getPokemonLevel(i) >= 80) then		
-	    		return true
-			end
+    	if getPokemonName(i) == "Rattata" and getPokemonLevel(i) >= 80 then
+    		return true
 		end
     end
     return false
