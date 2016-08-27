@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright ï¿½ 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -31,28 +31,36 @@ end
 
 
 function ToFortreeCity:isDoable()
-	if self:hasMap() and not hasItem("Devon Scope") then
-		return true
-	end
-	return false
+	return self:hasMap() and not hasItem("Devon Scope")
 end
 
 function ToFortreeCity:isDone()
-	if hasItem("Devon Scope") and getMapName() == "Route 120" then
-		return true
-	else
-		return false
-	end
+	return hasItem("Devon Scope") and getMapName() == "Route 120"
 end
 
 function ToFortreeCity:PokecenterPetalburgCity()
 	return self:pokecenter("Petalburg City")
 end
 
+function ToFortreeCity:PetalburgCityGym()
+	if  game.inRectangle(68,101,79,109) and hasItem("Balance Badge") then
+		return moveToCell(74,109)
+	elseif game.inRectangle(36,82,47,90) and hasItem("Balance Badge") then
+		return moveToCell(38,90)
+	elseif game.inRectangle(35,55,47,63) and hasItem("Balance Badge") then
+		return moveToCell(44,63)
+	elseif game.inRectangle(35,28,46,36) and hasItem("Balance Badge") then
+		return moveToCell(37,36)
+	elseif game.inRectangle(18,4,29,11) and hasItem("Balance Badge")  then 
+		return moveToCell(27,11)
+	end
+end
+
 function ToFortreeCity:PetalburgCity()
 	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Petalburg City" then
-		moveToMap("Pokecenter Petalburg City")
-	else moveToMap("Route 102")
+		return moveToMap("Pokecenter Petalburg City")
+	else
+		return moveToMap("Route 102")
 	end
 end
 

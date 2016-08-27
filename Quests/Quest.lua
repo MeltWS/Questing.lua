@@ -96,7 +96,6 @@ function Quest:leftovers()
 	or getMapName() == "Indigo Plateau" and not hasItem("Stone Badge") then -- START HOENN
 		return false
 	end
-	
 	if getTeamSize() > 0 then
 		if PokemonWithLeftovers > 0 then
 			if PokemonNeedLeftovers == PokemonWithLeftovers  then
@@ -106,7 +105,7 @@ function Quest:leftovers()
 				return true
 			end
 		else
-			if hasItem(ItemName) and not PokemonNeedLeftovers == 0 then
+			if hasItem(ItemName) and PokemonNeedLeftovers > 0 then
 				giveItemToPokemon(ItemName,PokemonNeedLeftovers)
 				return true
 			else

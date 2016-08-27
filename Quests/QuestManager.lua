@@ -62,7 +62,7 @@ local toMauville 				 = require('Quests/Hoenn/toMauville')
 local DynamoBadge				 = require('Quests/Hoenn/DynamoBadge')
 local ToLavaridgeTown	  		 = require('Quests/Hoenn/ToLavaridgeTown')
 local ToBalanceBadge 		     = require('Quests/Hoenn/ToBalanceBadge')
--- local ToFortreeCity  		     = require('Quests/Hoenn/ToFortreeCity')
+local ToFortreeCity  		     = require('Quests/Hoenn/ToFortreeCity')
 -- local GetTheOrbs 				 = require('Quests/Hoenn/GetTheOrbs')
 -- local MagmaHideout			     = require('Quests/Hoenn/MagmaHideout')
 -- local ToMossdeepCity			 = require('Quests/Hoenn/ToMossdeepCity')
@@ -127,7 +127,7 @@ local quests = {
 	DynamoBadge:new(),
 	ToLavaridgeTown:new(),
 	ToBalanceBadge:new(),
-	-- ToFortreeCity:new(),
+	ToFortreeCity:new(),
 	-- GetTheOrbs:new(),
 	-- MagmaHideout:new(),
 	-- ToMossdeepCity:new(),
