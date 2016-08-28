@@ -10,9 +10,9 @@ local game   = require "Libs/gamelib"
 local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
 
-local name		  = 'dfsfsfd '
-local description = ' '
-local level = 40
+local name		  = 'ToFortreeCity'
+local description = ' Clean Rockets at Weather Institute, and get Devon Scope'
+local level = 45
 
 local dialogs = {
 	xxx = Dialog:new({ 
@@ -23,9 +23,7 @@ local dialogs = {
 local ToFortreeCity = Quest:new()
 
 function ToFortreeCity:new()
-	o = Quest.new(ToFortreeCity, name, description, level, dialogs)
-	o.pokemonId = 1
-	return o
+	return Quest.new(ToFortreeCity, name, description, level, dialogs)
 end
 
 
@@ -35,23 +33,23 @@ function ToFortreeCity:isDoable()
 end
 
 function ToFortreeCity:isDone()
-	return hasItem("Devon Scope") and getMapName() == "Route 120"
+	return hasItem("Devon Scope")
 end
 
 function ToFortreeCity:PokecenterPetalburgCity()
-	return self:pokecenter("Petalburg City")
+	self:pokecenter("Petalburg City")
 end
 
 function ToFortreeCity:PetalburgCityGym()
-	if  game.inRectangle(68,101,79,109) and hasItem("Balance Badge") then
+	if  game.inRectangle(68,101,79,109) then
 		return moveToCell(74,109)
-	elseif game.inRectangle(36,82,47,90) and hasItem("Balance Badge") then
+	elseif game.inRectangle(36,82,47,90) then
 		return moveToCell(38,90)
-	elseif game.inRectangle(35,55,47,63) and hasItem("Balance Badge") then
+	elseif game.inRectangle(35,55,47,63) then
 		return moveToCell(44,63)
-	elseif game.inRectangle(35,28,46,36) and hasItem("Balance Badge") then
+	elseif game.inRectangle(35,28,46,36) then
 		return moveToCell(37,36)
-	elseif game.inRectangle(18,4,29,11) and hasItem("Balance Badge")  then 
+	elseif game.inRectangle(18,4,29,11) then 
 		return moveToCell(27,11)
 	end
 end
@@ -65,16 +63,8 @@ function ToFortreeCity:PetalburgCity()
 end
 
 function ToFortreeCity:Route102()
-	if not game.hasPokemonWithMove("Surf") then
-		if self.pokemonId < getTeamSize() then
-			useItemOnPokemon("HM03 - Surf", self.pokemonId)
-			log("Pokemon: " .. self.pokemonId .. " Try Learning:Surf")
-			self.pokemonId = self.pokemonId + 1
-		else
-			fatal("No pokemon in this team can learn Surf")
-		end
-	else 
-	moveToMap("Oldale Town")
+	if game.tryTeachMove("Surf", "HM03 - Surf") then
+		return moveToMap("Oldale Town")
 	end
 end
 
@@ -83,7 +73,7 @@ function ToFortreeCity:OldaleTown()
 end
 
 function ToFortreeCity:Route103()
-	 moveToMap("Route 110")
+	 return moveToMap("Route 110")
 end
 
 function ToFortreeCity:Route110()
@@ -113,64 +103,60 @@ end
 
 function ToFortreeCity:Route119A()
 	
-	if not self:isTrainingOver() and not self:needPokecenter() then
-		moveToGrass()
-	elseif self:needPokecenter() then 
-		moveToMap("Weather Institute 1F")
+	if self:needPokecenter() then 
+		return moveToMap("Weather Institute 1F")
+	elseif not self:isTrainingOver() then
+		return moveToGrass()
 	elseif isNpcOnCell (18,43) then 
-		moveToMap("Weather Institute 1F") 
+		return moveToMap("Weather Institute 1F") 
 	elseif isNpcOnCell(41,30) then 
-		talkToNpcOnCell(41,30)
-	else moveToMap("Fortree City")
+		return talkToNpcOnCell(41,30)
+	else
+		return moveToMap("Fortree City")
 	end
 end
 
 function ToFortreeCity:WeatherInstitute1F()
 	if not game.isTeamFullyHealed() then
-		talkToNpcOnCell(18,24)
+		return talkToNpcOnCell(18,24)
 	elseif not self:isTrainingOver()  then
-		moveToMap("Route 119A")
+		return moveToMap("Route 119A")
 	elseif  isNpcOnCell(32,9) then
-		talkToNpcOnCell(32,9)
+		return talkToNpcOnCell(32,9)
 	elseif isNpcOnCell(24,13) then
-		moveToMap("Weather Institute 2F")
-	else moveToMap("Route 119A")
+		return moveToMap("Weather Institute 2F")
+	else
+		return moveToMap("Route 119A")
 	end
 end
 
 function ToFortreeCity:WeatherInstitute2F()
 	if isNpcOnCell(16,19) then
-		talkToNpcOnCell(16,19)
-	else moveToMap("Weather Institute 1F")
+		return talkToNpcOnCell(16,19)
+	else
+		return moveToMap("Weather Institute 1F")
 	end
 end
 
 
 function ToFortreeCity:Route120()
 	if isNpcOnCell(45,13) then 
-		talkToNpcOnCell(45,13)
+		return talkToNpcOnCell(45,13)
 	elseif not isNpcOnCell(45,13) and not hasItem("Feather Badge") then
-		moveToMap("Fortree City")
+		return moveToMap("Fortree City")
 	end
 end
 
 function ToFortreeCity:FortreeCity()
 	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Fortree City" then
-		moveToMap("Pokecenter Fortree City")
+		return moveToMap("Pokecenter Fortree City")
 	elseif not hasItem("Devon Scope") then
-		moveToMap("Route 120")
+		return moveToMap("Route 120")
 	end
 end
 
 function ToFortreeCity:PokecenterFortreeCity()
-	return self:pokecenter("Fortree City")
-end
-
-function ToFortreeCity:FortreeGym()
-	if not hasItem("Feather Badge") then
-		talkToNpcOnCell(19,7)
-	else moveToMap("Fortree City")
-	end
+	self:pokecenter("Fortree City")
 end
 
 function ToFortreeCity:Route1a03()

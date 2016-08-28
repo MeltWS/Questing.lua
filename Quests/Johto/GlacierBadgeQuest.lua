@@ -11,7 +11,7 @@ local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
 
 local name		  = 'Glacier Badge Quest'
-local description = 'Will exp to the lv 65, clear the Rocket Hideout, and earn the 7th Badge'
+local description = 'Clear the Rocket Hideout, and earn the 7th Badge'
 local level = 65
 local N = 1
 local lance = false
@@ -23,12 +23,12 @@ local chappy = false
 
 local GlacierBadgeQuest = Quest:new()
 local dialogs = {
-	fdp = Dialog:new({ 
+	computer1 = Dialog:new({ 
 		"Rats, no sign of any picture with Christina on this desk!"
 		
 		
 	}),
-	marchefdp = Dialog:new({ 
+	computer2 = Dialog:new({ 
 		"I don't have anything to do with this now...",
 		"Yes, this was the computer!"
 		
@@ -204,11 +204,11 @@ end
 
 function GlacierBadgeQuest:MahoganyTownRocketHideoutB3F()
 	if game.inRectangle(48,4,26,30) then
-		if dialogs.fdp.state then
-			dialogs.fdp.state = false
+		if dialogs.computer1.state then
+			dialogs.computer1.state = false
 			N = N + 1
 			return
-		elseif dialogs.marchefdp.state then
+		elseif dialogs.computer2.state then
 			if not admin then
 			moveToCell(49,5)
 			else moveToCell(49,30)

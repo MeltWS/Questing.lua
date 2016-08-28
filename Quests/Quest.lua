@@ -19,6 +19,7 @@ function Quest:new(name, description, level, dialogs)
 	o.level       = level or 1
 	o.dialogs     = dialogs
 	o.training    = true
+	o.bikeUsable  = true
 	return o
 end
 
@@ -118,15 +119,15 @@ function Quest:leftovers()
 end
 
 function Quest:useBike()
-	if hasItem("Bicycle") then
+	if hasItem("Bicycle") and self.bikeUsable then
 		if isOutside() and not isMounted() and not isSurfing() then
-			useItem("Bicycle")
 			log("Using: Bicycle")
-			return true --Mounting the Bike
+			return useItem("Bicycle")
 		else
 			return false
 		end
 	else
+		self.bikeUsable = true
 		return false
 	end
 end
@@ -355,7 +356,10 @@ function Quest:battleMessage(message)
 	return false
 end
 
-function Quest:systemMessage(message)	
+function Quest:systemMessage(message)
+	if sys.stringContains(message, "You can't do this while surfing!") then
+		self.bikeUsable = false
+	end	
 	return false
 end
 

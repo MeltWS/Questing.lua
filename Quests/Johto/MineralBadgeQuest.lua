@@ -11,7 +11,7 @@ local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
 
 local name		  = 'Mineral Badge Quest'
-local description = 'Last XP quest (65) until Dragon Den, and earn the 6th Badge'
+local description = 'Last XP quest (62) until Dragon Den, and earn the 6th Badge'
 local level = 65
 
 local dialogs = {
@@ -46,24 +46,27 @@ end
 
 function MineralBadgeQuest:CianwoodCity()
 	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Cianwood" then
-		moveToMap("Pokecenter Cianwood")
+		return moveToMap("Pokecenter Cianwood")
 	elseif not dialogs.potion.state then 
-		moveToMap("Cianwood Shop")
-	else moveToMap("Route 41")
+		return moveToMap("Cianwood Shop")
+	else
+		return moveToMap("Route 41")
 	end 
 end
 
 function MineralBadgeQuest:Route41()
 	if not self:isTrainingOver() and not self:needPokecenter() then 
-		moveToWater()
-	else moveToMap("Route 40")
+		return moveToWater()
+	else 
+		return moveToMap("Route 40")
 	end
 end
 
 function MineralBadgeQuest:Route40()
 	if not self:isTrainingOver() and not self:needPokecenter() then 
-		moveToMap("Route 41")
-	else moveToMap("Olivine City")
+		return moveToMap("Route 41")
+	else
+		return moveToMap("Olivine City")
 	end
 	
 end

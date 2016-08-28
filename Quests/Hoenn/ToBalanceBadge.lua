@@ -12,11 +12,11 @@ local Dialog = require "Quests/Dialog"
 
 local name		  = 'ToBalanceBadge'
 local description = ' Questing up to Balance Badge'
-local level = 40 
+local level = 45
 local trainersBeaten = 0
 
 local dialogs = {
-	trainerDone = Dialog:new({ 
+	trainerDone = Dialog:new({
 		"Come back later!"
 	})
 }
@@ -48,7 +48,7 @@ function ToBalanceBadge:LavaridgeTown()
 		return talkToNpcOnCell(15,25)
 	elseif self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Lavaridge Town" then
 		return moveToMap("Pokecenter Lavaridge Town")
-	else 
+	else
 		return moveToMap("Route 112")
 	end
 end
@@ -67,7 +67,7 @@ function ToBalanceBadge:JaggedPass()
 	if self:needPokecenter() or self:isTrainingOver() then
 	 	return moveToMap("Route 112")
 	else
-		moveToGrass()
+		return moveToGrass()
 	end
 end
 
@@ -134,7 +134,7 @@ end
 function ToBalanceBadge:RusturfTunnel()
 	if not self:isTrainingOver() then
 		return moveToMap("Verdanturf Town")
-	else
+	elseif game.tryTeachMove("Rock Smash", "TM114") then
 		return moveToCell(11,19)
 	end
 end
@@ -156,7 +156,7 @@ function ToBalanceBadge:RustboroCity()
 end
 
 function ToBalanceBadge:Route104()
-	if game.inRectangle(7,0,41,67) then 
+	if game.inRectangle(7,0,41,67) then
 		if not self:isTrainingOver() then
 			return moveToMap("Rustboro City")
 		else
@@ -201,29 +201,29 @@ function ToBalanceBadge:PetalburgCityGym()
 
 	if isNpcOnCell (73,104) then
 		return talkToNpcOnCell(73,104)
-	elseif game.inRectangle(68,101,79,109) then 
+	elseif game.inRectangle(68,101,79,109) then
 		return moveToCell(77,100)
-	elseif game.inRectangle(36,82,47,90) and (trainersBeaten < 1)  and not game.inRectangle(42,86,42,86)  then 
+	elseif game.inRectangle(36,82,47,90) and (trainersBeaten < 1)  and not game.inRectangle(42,86,42,86)  then
 		return moveToCell(42,86)
-	elseif game.inRectangle(36,82,47,90) and (trainersBeaten < 1) and game.inRectangle(42,86,42,86)  then 
+	elseif game.inRectangle(36,82,47,90) and (trainersBeaten < 1) and game.inRectangle(42,86,42,86)  then
 		return talkToNpcOnCell(41,86)
 	elseif game.inRectangle(36,82,47,90) then
 		return moveToCell(38,81)
-	elseif game.inRectangle(35,55,46,63) and (trainersBeaten < 2) and not game.inRectangle(41,58,41,58)  then 
+	elseif game.inRectangle(35,55,46,63) and (trainersBeaten < 2) and not game.inRectangle(41,58,41,58)  then
 		return moveToCell(41,58)
-	elseif game.inRectangle(35,55,46,63) and not (trainersBeaten < 2) and game.inRectangle(41,58,41,58)  then 
+	elseif game.inRectangle(35,55,46,63) and not (trainersBeaten < 2) and game.inRectangle(41,58,41,58)  then
 		trainersBeaten = 1
 		return talkToNpcOnCell(40,58)
 	elseif game.inRectangle(35,55,46,63) then
 		return moveToCell(44,54)
-	elseif game.inRectangle(35,28,46,36) and (trainersBeaten < 3) and not game.inRectangle(41,31,41,31)  then 
+	elseif game.inRectangle(35,28,46,36) and (trainersBeaten < 3) and not game.inRectangle(41,31,41,31)  then
 		return moveToCell(41,31)
-	elseif game.inRectangle(35,28,46,36) and (trainersBeaten < 3) and game.inRectangle(41,31,41,31)  then 
+	elseif game.inRectangle(35,28,46,36) and (trainersBeaten < 3) and game.inRectangle(41,31,41,31)  then
 		trainersBeaten = 2
 		return talkToNpcOnCell(40,31)
 	elseif game.inRectangle(35,28,46,36) then
 		return moveToCell(37,27)
-	elseif game.inRectangle(18,4,29,11) then 
+	elseif game.inRectangle(18,4,29,11) then
 		return talkToNpcOnCell(23,4)
 	end
 end
