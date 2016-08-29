@@ -82,7 +82,7 @@ function MoonFossilQuest:MtMoonB2F()
 				elseif KANTO_FOSSIL_ID == 2 then
 					return talkToNpcOnCell(26, 29)
 				else
-					fatal("undefined KANTO_FOSSIL_ID")
+					return fatal("undefined KANTO_FOSSIL_ID")
 				end
 			else
 				return talkToNpcOnCell(23, 31)

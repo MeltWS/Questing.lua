@@ -142,15 +142,13 @@ end
 function ToFortreeCity:Route120()
 	if isNpcOnCell(45,13) then 
 		return talkToNpcOnCell(45,13)
-	elseif not isNpcOnCell(45,13) and not hasItem("Feather Badge") then
-		return moveToMap("Fortree City")
 	end
 end
 
 function ToFortreeCity:FortreeCity()
 	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Fortree City" then
 		return moveToMap("Pokecenter Fortree City")
-	elseif not hasItem("Devon Scope") then
+	else
 		return moveToMap("Route 120")
 	end
 end
@@ -158,21 +156,5 @@ end
 function ToFortreeCity:PokecenterFortreeCity()
 	self:pokecenter("Fortree City")
 end
-
-function ToFortreeCity:Route1a03()
-	return moveToMap("Route110")
-end
-
-function ToFortreeCity:Route103a()
-	return moveToMap("Route110")
-end
-
-function ToFortreeCity:Route10a3()
-	return moveToMap("Route110")
-end
-function ToFortreeCity:Route1a03()
-	return moveToMap("Route110")
-end
-
 
 return ToFortreeCity

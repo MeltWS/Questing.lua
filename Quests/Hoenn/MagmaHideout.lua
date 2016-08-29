@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright ï¿½ 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -10,9 +10,9 @@ local game   = require "Libs/gamelib"
 local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
 
-local name		  = ' '
-local description = ' '
-local level = 000
+local name		  = 'Magma Hideout'
+local description = ' Clear Magma Hideout'
+local level = 60
 
 local dialogs = {
 	xxx = Dialog:new({ 
@@ -27,163 +27,123 @@ function MagmaHideOut:new()
 end
 
 function MagmaHideOut:isDoable()
-	if self:hasMap() and hasItem("Blue Orb") and hasItem("Red Orb") then
-		return true
-	end
-	return false
+	return self:hasMap() and hasItem("Blue Orb") and hasItem("Red Orb")
 end
 
 function MagmaHideOut:isDone()
-	if not hasItem("Red Orb") and getMapName() == "Magma Hideout 4F" then
-		return true
-	else
-		return false
-	end
+	return not hasItem("Red Orb")
+end
+
+function MagmaHideOut:PokecenterLilycoveCity()
+	self:pokecenter("Lillycove City")
+end
+
+function MagmaHideOut:LillycoveCity()
+	return moveToMap("Route 121")
+end
+
+function MagmaHideOut:Route120()
+	return moveToMap("Route 121")
+end
+
+function MagmaHideOut:Route121()
+	return moveToMap("Route 122")
 end
 
 function MagmaHideOut:MtPyreSummit()
-	moveToMap("Mt. Pyre Exterior")
+	return moveToMap("Mt. Pyre Exterior")
 end
 
 function MagmaHideOut:MtPyreExterior()
-	moveToMap("Mt. Pyre 3F")
+	return moveToMap("Mt. Pyre 3F")
 end
 
 function MagmaHideOut:MtPyre3F()
-	moveToMap("Mt. Pyre 2F")
+	return moveToMap("Mt. Pyre 2F")
 end
 
 function MagmaHideOut:MtPyre2F()
-	moveToMap("Mt. Pyre 1F")
+	return moveToMap("Mt. Pyre 1F")
 end
 
 function MagmaHideOut:MtPyre1F()
-	moveToMap("Route 122")
+	return moveToMap("Route 122")
 end
 
 function MagmaHideOut:Route122()
-	moveToMap("Route 123")
+	return moveToMap("Route 123")
 end
 
 function MagmaHideOut:Route123()
-	moveToMap("Route 118")
+	return moveToMap("Route 118")
 end
 
 function MagmaHideOut:Route118()
-	moveToMap("Mauville City Stop House 4")
+	return moveToMap("Mauville City Stop House 4")
 end
 
 function MagmaHideOut:MauvilleCityStopHouse4()
-	moveToMap("Mauville City")
+	return moveToMap("Mauville City")
 end
 
 function MagmaHideOut:MauvilleCity()
 	if  self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Mauville City" then
-		moveToMap("Pokecenter Mauville City")
-	else moveToMap("Mauville City Stop House 3")
+		return moveToMap("Pokecenter Mauville City")
+	else
+		return moveToMap("Mauville City Stop House 3")
 	end
 end
 
 function MagmaHideOut:PokecenterMauvilleCity()
-	return self:pokecenter("Mauville City")
+	self:pokecenter("Mauville City")
 end
 
-	
-
-
 function MagmaHideOut:MauvilleCityStopHouse3()
-	moveToMap("Route 111 South")
+	return moveToMap("Route 111 South")
 end
 
 function MagmaHideOut:Route111South()
-	moveToMap("Route 112")
+	return moveToMap("Route 112")
 end
 
 function MagmaHideOut:Route112()
-	moveToMap("Cable Car Station 1")
+	return moveToMap("Cable Car Station 1")
 end
 
 function MagmaHideOut:CableCarStation1()
-	talkToNpcOnCell(10,6)
+	return talkToNpcOnCell(10,6)
 end
 
 function MagmaHideOut:CableCarStation2()
-	moveToMap("Mt. Chimney")
+	return moveToMap("Mt. Chimney")
 end
 
 function MagmaHideOut:MtChimney()
-	moveToMap("Jagged Pass")
+	return moveToMap("Jagged Pass")
 end
 
 function MagmaHideOut:JaggedPass()
-	talkToNpcOnCell(30,35)
+	return talkToNpcOnCell(30,35)
 end
 
 function MagmaHideOut:MagmaHideout1F()
-	moveToMap("Magma Hideout 2F1R")
+	return moveToMap("Magma Hideout 2F1R")
 end
 
 function MagmaHideOut:MagmaHideout2F1R()
-	moveToMap("Magma Hideout 3F1R")
+	return moveToMap("Magma Hideout 3F1R")
 end
 
 function MagmaHideOut:MagmaHideout3F1R()
-	moveToMap("Magma Hideout 4F")
+	return moveToMap("Magma Hideout 4F")
 end
 
 function MagmaHideOut:MagmaHideout4F()
 	if isNpcOnCell(16,31) then
-		talkToNpcOnCell(16,31)
-	else moveToMap("Magma Hideout 3F3R")
+		return talkToNpcOnCell(16,31)
+	else
+		return moveToMap("Magma Hideout 3F3R")
 	end
-end
-
-function MagmaHideOut:MapName()
-	
-end
-
-function MagmaHideOut:MapName()
-	
-end
-
-function MagmaHideOut:MapName()
-	
-end
-
-function MagmaHideOut:MapName()
-	
-end
-
-function MagmaHideOut:MapName()
-	
-end
-
-function MagmaHideOut:MapName()
-	
-end
-
-function MagmaHideOut:MapName()
-	
-end
-
-function MagmaHideOut:MapName()
-	
-end
-
-function MagmaHideOut:MapName()
-	
-end
-
-function MagmaHideOut:MapName()
-	
-end
-
-function MagmaHideOut:MapName()
-	
-end
-
-function MagmaHideOut:MapName()
-	
 end
 
 return MagmaHideOut

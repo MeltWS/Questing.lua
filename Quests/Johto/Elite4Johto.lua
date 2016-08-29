@@ -11,7 +11,7 @@ local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
 
 local name		  = 'Elite 4 johto'
-local description = 'Tain Rattata, beat Elite Johto 4 and Joey'
+local description = 'Train Rattata, beat Elite Johto 4 and Joey'
 local level = 80
 local teamManaged = false
 
@@ -41,26 +41,23 @@ function Elite4Johto:new()
 	o.forceCaught = false
 	o.qnt_revive = 32
 	o.qnt_hyperpot = 32
+	o.autoEvolve = false
 	return o
-	
-end
-
-function Elite4Johto:PokecenterBlackthorn()
-	self:pokecenter("Blackthorn City")
-	--if not teamManaged then
-		-- TManager.manage() -- Get e4 team ready from PC
-	--end
 end
 
 function Elite4Johto:isDoable()
-	if self:hasMap() and not hasItem("Stone Badge") then
-		return true
-	end
-	return false
+	return self:hasMap() and not hasItem("Stone Badge")
 end
 
 function Elite4Johto:isDone()
 	return getMapName() == "Littleroot Town Truck"
+end
+
+function Elite4Johto:PokecenterBlackthorn()
+	self:pokecenter("Blackthorn City")
+	--if not teamManaged() then
+		-- TManager.manage() -- Get e4 team ready from PC
+	--end
 end
 
 function Elite4Johto:BlackthornCityGym()
@@ -116,12 +113,12 @@ function Elite4Johto:Route26()
 end
 
 function Elite4Johto:PokemonLeagueReceptionGate()
-	if checkRattata() or not isNpcOnCell(2,11) then -- need check guards
-		 return moveToMap("Victory Road Kanto 1F")
+	if checkRattata() or not isNpcOnCell(2,11) then -- guards mt.silver
+		return moveToMap("Victory Road Kanto 1F")
 	elseif dialogs.guardMtSilver.state then 
 		return moveToMap("Route 22")
 	else
-		return talkToNpcOnCell(2,11) --guard MtSilver
+		return talkToNpcOnCell(2,11) -- guard MtSilver
 	end		
 end
 
@@ -219,7 +216,7 @@ end
 function Elite4Johto:PokecenterCinnabar()
 	self:pokecenter("Cinnabar Island")
 	if self.forceCaught and not hasPokemonInTeam("Rattata") then
-		fatal("Need PC Lib Fix")-- get Rattata in PC
+		return fatal("Need PC Lib Fix")-- get Rattata in PC
 	end
 end
 
@@ -274,7 +271,7 @@ function Elite4Johto:SeafoamB4F()
 	elseif getUsablePokemonCount() then
 	    return moveToRectangle(50,10,62,32)			
 	else
-		fatal("don't have enough Pokemons for farm 1500 money and heal the team")
+		return fatal("don't have enough Pokemons for farm 1500 money and heal the team")
 	end
 end
 
@@ -331,7 +328,7 @@ function Elite4Johto:IndigoPlateauCenterJohto()
 		return talkToNpcOnCell(4,22)
 	elseif dialogs.leagueDefeated.state or not self:canBuyReviveItems() then
 		if not checkRattata() then
-			fatal("Need PC lib FIX to get Rattata From PC") -- get Rattata From PC
+			return fatal("Need PC lib FIX to get Rattata From PC") -- get Rattata From PC
 		else
 			return moveToMap("Indigo Plateau")
 		end
@@ -388,7 +385,7 @@ function Elite4Johto:EliteFourKarenRoom()
 end
 
 function Elite4Johto:EliteFourChampionRoomJohto()
-	if not self:useReviveItems() ~= false and not dialogs.leagueDefeated.state then
+	if self:useReviveItems() ~= false then
 		return
 	elseif not dialogs.leaderDone.state then
 		return talkToNpcOnCell(6,15) 
@@ -440,9 +437,6 @@ end
 
 function checkRattata()
 	local teamSize = getTeamSize()
-	if isAutoEvolve() then -- custom proshine API
-		return disableAutoEvolve()
-	end
 	for i=1,teamSize,1 do
     	if getPokemonName(i) == "Rattata" and getPokemonLevel(i) >= 80 then
     		return true

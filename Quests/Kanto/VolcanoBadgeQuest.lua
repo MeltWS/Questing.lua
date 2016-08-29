@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright ï¿½ 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -140,7 +140,7 @@ function VolcanoBadgeQuest:SeafoamB4F()
 				return talkToNpcOnCell(59,13)
 			else
 				if not game.getTotalUsablePokemonCount() > 1 then -- Try get 1500money
-				    fatal("don't have enough Pokemons for farm 1500 money and heal the team")
+				    return fatal("don't have enough Pokemons for farm 1500 money and heal the team")
 				else 
 				    return moveToRectangle(50,10,62,32)
 				end

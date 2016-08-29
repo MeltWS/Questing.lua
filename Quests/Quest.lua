@@ -20,6 +20,7 @@ function Quest:new(name, description, level, dialogs)
 	o.dialogs     = dialogs
 	o.training    = true
 	o.bikeUsable  = true
+	o.autoEvolve  = true
 	return o
 end
 
@@ -64,13 +65,18 @@ function Quest:pokemart(exitMapName)
 	local money         = getMoney()
 	if money >= 200 and pokeballCount < 50 then
 		if not isShopOpen() then
-			return talkToNpcOnCell(3,5)
+			if isNpcOnCell(3,5) then 
+				return talkToNpcOnCell(3,5)
+			elseif isNpcOnCell(12,9) then
+				return talkToNpcOnCell(12,9)
+			end
 		else
 			local pokeballToBuy = 50 - pokeballCount
 			local maximumBuyablePokeballs = money / 200
 			if maximumBuyablePokeballs < pokeballToBuy then
 				pokeballToBuy = maximumBuyablePokeballs
 			end
+			log("Buying " .. pokeballToBuy .. " Pokeballs")
 			return buyItem("Pokeball", pokeballToBuy)
 		end
 	else
@@ -129,6 +135,18 @@ function Quest:useBike()
 	else
 		self.bikeUsable = true
 		return false
+	end
+end
+
+function Quest:autoEvolveSwitch()
+	if self.autoEvolve == isAutoEvolve() then -- custom proshine API -> Github/MeltWS
+		return true
+	elseif self.autoEvolve then
+		log("Enabling auto evolve.")
+		return enableAutoEvolve()
+	else
+		log("Disabling auto evolve.")
+		return disableAutoEvolve()
 	end
 end
 
@@ -209,9 +227,7 @@ function Quest:evolvePokemon()
 	local hasMoonStone = hasItem("Moon Stone")
 	for pokemonId=1, getTeamSize(), 1 do
 		local pokemonName = getPokemonName(pokemonId)
-		if hasMoonStone
-			and sys.tableHasValue(moonStoneTargets, pokemonName)
-		then
+		if hasMoonStone and sys.tableHasValue(moonStoneTargets, pokemonName) then
 			return useItemOnPokemon("Moon Stone", pokemonId)
 		end
 	end
@@ -226,9 +242,6 @@ function Quest:path()
 	if self:evolvePokemon() then
 		return true
 	end
-	--if not isTeamSortedByLevelAscending() then
-		--return sortTeamByLevelAscending()
-	--end
 	if self:advanceSorting() then
 		return true
 	end
@@ -237,6 +250,9 @@ function Quest:path()
 	end
 	if self:useBike() then
 		return true
+	end
+	if not self:autoEvolveSwitch() then
+		return fatal("Switching auto evolve state failed.")
 	end
 	local mapFunction = self:mapToFunction()
 	assert(self[mapFunction] ~= nil, self.name .. " quest has no method for map: " .. getMapName())
@@ -259,6 +275,7 @@ end
 local blackListTargets = { --it will kill this targets instead catch
 	"Metapod",
 	"Kakuna",
+	"Wurmple",
 	"Silcoon",
 	"Cascoon",
 	"Ralts",
@@ -363,17 +380,33 @@ function Quest:systemMessage(message)
 	return false
 end
 
+local keepMoves = { -- moves not to forget.
+	"cut",
+	"surf",
+	"flash",
+	"rock smash",
+	"dive",
+	"sleep powder",
+	"sucker punch" -- for deoxys
+}
+
 function Quest:chooseForgetMove(moveName, pokemonIndex) -- Calc the WrostAbility ((Power x PP)*(Accuract/100))
-	local ForgetMoveName
+	local ForgetMoveName = nil
 	local ForgetMoveTP = 9999
 	for moveId=1, 4, 1 do
 		local MoveName = getPokemonMoveName(pokemonIndex, moveId)
-		if not MoveName == nil or not game.keepMove(MoveName) then
-			local CalcMoveTP = math.modf((getPokemonMaxPowerPoints(pokemonIndex,moveId) * getPokemonMovePower(pokemonIndex,moveId))*(math.abs(getPokemonMoveAccuracy(pokemonIndex,moveId)) / 100))
+		if MoveName and not sys.tableHasValue(keepMoves, string.lower(MoveName)) then
+			local movePP = getPokemonMaxPowerPoints(pokemonIndex, moveId)
+			if movePP > 10 then -- To prevent not having high power move later game.
+				movePP = 10
+			end
+			local CalcMoveTP = math.modf(movePP * getPokemonMovePower(pokemonIndex,moveId)*(math.abs(getPokemonMoveAccuracy(pokemonIndex,moveId)) / 100))
 			if CalcMoveTP < ForgetMoveTP then
 				ForgetMoveTP = CalcMoveTP
 				ForgetMoveName = MoveName
 			end
+		elseif MoveName then
+			log("[Move to keep : " .. MoveName .. "]")
 		end
 	end
 	log("[Learning Move: " .. moveName .. "  -->  Forget Move: " .. ForgetMoveName .. "]")
@@ -381,7 +414,12 @@ function Quest:chooseForgetMove(moveName, pokemonIndex) -- Calc the WrostAbility
 end
 
 function Quest:learningMove(moveName, pokemonIndex)
-	return forgetMove(self:chooseForgetMove(moveName, pokemonIndex))
+	local ForgetMoveName = self:chooseForgetMove(moveName, pokemonIndex)
+	if ForgetMoveName then
+		return forgetMove(ForgetMoveName)
+	else
+		log("No move should be forgotten for Pokemon " .. pokemonIndex ..  ", unable to learn : " .. moveName)
+	end
 end
 
 return Quest

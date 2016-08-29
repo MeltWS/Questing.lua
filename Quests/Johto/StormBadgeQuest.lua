@@ -151,7 +151,7 @@ function StormBadgeQuest:Route40()
 			log("Pokemon: " .. self.pokemonId .. " Try Learn Surf")
 			self.pokemonId = self.pokemonId + 1
 		else
-			fatal("No pokemon in this team can learn Surf")
+			return fatal("No pokemon in this team can learn Surf")
 		end
 	else moveToMap("Route 41")
 	end

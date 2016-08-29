@@ -299,7 +299,7 @@ end
 
 function GoldenrodCityQuest:PokecenterGoldenrod()
 	if hasItem("Basement Key") and not hasPokemonInTeam("Oddish") and dialogs.guardQuestPart2.state then
-		fatal("Need Wait FIX for ProShine API [ usePC() ] -  No other quests for now")
+		return fatal("Need Wait FIX for ProShine API [ usePC() ] -  No other quests for now")
 	else
 		self:pokecenter("Goldenrod City")
 	end	

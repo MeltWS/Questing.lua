@@ -34,10 +34,7 @@ end
 
 
 function FromLittlerootToWoodsQuest:isDoable()
-	if not hasItem("Stone Badge")   and self:hasMap() then
-		return true
-	end
-	return false
+	return self:hasMap() and not hasItem("Stone Badge")
 end
 
 function FromLittlerootToWoodsQuest:isDone()
@@ -85,9 +82,6 @@ end
 
 
 function FromLittlerootToWoodsQuest:LittlerootTownTruck()
-	if not isAutoEvolve() then
-		return enableAutoEvolve() -- custom proshine API -> MeltWS/proshine
-	end
 	return moveToMap("Littleroot Town")
 end
 
@@ -147,10 +141,17 @@ end
 function FromLittlerootToWoodsQuest:OldaleTown()
 	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Oldale Town" then
 		return moveToMap("Pokecenter Oldale Town")
+	elseif self:needPokemart() then
+		return moveToMap("Mart Oldale Town")
 	elseif dialogs.mayCheck.state then 
 		return moveToMap("Route 102")
-	else moveToMap("Route 103")
+	else
+		return moveToMap("Route 103")
 	end
+end
+
+function FromLittlerootToWoodsQuest:MartOldaleTown()
+	self:pokemart("Oldale Town")
 end
 
 function FromLittlerootToWoodsQuest:Route103()

@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright ï¿½ 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -146,7 +146,7 @@ end
 
 function HmFlashQuest:Route2Stop3()
 	if getPokedexOwned() < 10 then
-		fatal("To take [HM05 - Flash] need 10 pokemons, you still have to catch ".. (10 - getPokedexOwned()) .." pokemons")
+		return fatal("To take [HM05 - Flash] need 10 pokemons, you still have to catch ".. (10 - getPokedexOwned()) .." pokemons")
 	elseif not hasItem("HM05 - Flash") then
 		return talkToNpcOnCell(6,5)
 	else

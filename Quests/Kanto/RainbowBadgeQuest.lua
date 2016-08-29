@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright ï¿½ 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -67,7 +67,7 @@ function RainbowBadgeQuest:CeladonCity()
 			log("Pokemon: " .. self.pokemonId .. " Try Learning: HM01 - Cut")
 			self.pokemonId = self.pokemonId + 1
 		else
-			fatal("No pokemon in this team can learn - Cut")
+			return fatal("No pokemon in this team can learn - Cut")
 		end
 	elseif not hasItem("Rainbow Badge") then
 		return moveToMap("CeladonGym")

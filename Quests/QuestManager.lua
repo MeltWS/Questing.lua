@@ -63,11 +63,12 @@ local DynamoBadge				 = require('Quests/Hoenn/DynamoBadge')
 local ToLavaridgeTown	  		 = require('Quests/Hoenn/ToLavaridgeTown')
 local ToBalanceBadge 		     = require('Quests/Hoenn/ToBalanceBadge')
 local ToFortreeCity  		     = require('Quests/Hoenn/ToFortreeCity')
+local FeatherBadgeQuest  	     = require('Quests/Hoenn/FeatherBadgeQuest')
 local GetTheOrbs 				 = require('Quests/Hoenn/GetTheOrbs')
 local MagmaHideout			     = require('Quests/Hoenn/MagmaHideout')
 local ToMossdeepCity			 = require('Quests/Hoenn/ToMossdeepCity')
--- local meetKyogre			     = require('Quests/Hoenn/meetKyogre')
--- local beatDeoxys				 = require('Quests/Hoenn/beatDeoxys')
+local meetKyogre			     = require('Quests/Hoenn/meetKyogre')
+local beatDeoxys				 = require('Quests/Hoenn/beatDeoxys')
 -- local e4Hoenn					 = require('Quests/Hoenn/e4Hoenn')
 
 local quests = {
@@ -128,11 +129,12 @@ local quests = {
 	ToLavaridgeTown:new(),
 	ToBalanceBadge:new(),
 	ToFortreeCity:new(),
+	FeatherBadgeQuest:new(),	
 	GetTheOrbs:new(),
 	MagmaHideout:new(),
 	ToMossdeepCity:new(),
-	-- meetKyogre:new(),
-	-- beatDeoxys:new(),
+	meetKyogre:new(),
+	beatDeoxys:new(),
 	-- e4Hoenn:new()
 }
 

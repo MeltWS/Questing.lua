@@ -68,7 +68,7 @@ function ExpForElite4Kanto:useZoneExp()
 		elseif self.zoneExp == 4 then
 			return moveToRectangle(40,23,55,26) --Road2F
 		else
-		    fatal("Error zone exp")
+		    return fatal("Error zone exp")
 		end
 	end
 end
@@ -109,12 +109,10 @@ end
 function ExpForElite4Kanto:PokemonLeagueReceptionGate()
 	if isNpcOnCell(22,3) then
 		return talkToNpcOnCell(22,3)
+	elseif dialogs.leagueKantoNotDone.state then
+		return moveToMap("Victory Road Kanto 1F")
 	elseif isNpcOnCell(22,23) then
-		if dialogs.leagueKantoNotDone.state then
-			return moveToMap("Victory Road Kanto 1F")
-		else
-			return talkToNpcOnCell(22,23)
-		end
+		return talkToNpcOnCell(22,23)
 	else
 		return moveToMap("Route 26")
 	end
@@ -195,7 +193,7 @@ function ExpForElite4Kanto:IndigoPlateauCenter()
 		elseif not self:isTrainingOver() or not self:canBuyReviveItems() then
 			return moveToMap("Indigo Plateau") --Road2F
 		elseif self:buyReviveItems() ~= false then
-			return 
+			return
 		else
 			return moveToCell(10,3) --Start E4
 		end
