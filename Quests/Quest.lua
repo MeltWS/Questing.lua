@@ -13,14 +13,14 @@ local Quest = {}
 function Quest:new(name, description, level, dialogs)
 	local o = {}
 	setmetatable(o, self)
-	self.__index     = self
-	o.name        = name
-	o.description = description
-	o.level       = level or 1
-	o.dialogs     = dialogs
-	o.training    = true
-	o.bikeUsable  = true
-	o.autoEvolve  = true
+	self.__index   = self
+	o.name         = name
+	o.description  = description
+	o.level        = level or 1
+	o.dialogs      = dialogs
+	o.training     = true
+	o.bikeUsable   = true
+	o.autoEvolve   = true
 	return o
 end
 
@@ -330,12 +330,23 @@ function Quest:trainerBattle()
 	return attack() or sendUsablePokemon() or sendAnyPokemon() -- or game.useAnyMove()
 end
 
+function Quest:customBattle()
+	sys.error("Quest:customBattle", "function is not overloaded in quest: " .. self.name)
+	return nil
+end
+
+function Quest:isCustomBattle()
+	return false
+end
+
 function Quest:battle()
 	if not self.inBattle then
 		self.inBattle = true
 		self:battleBegin()
 	end
-	if isWildBattle() then
+	if self:isCustomBattle() then
+		return self:customBattle()
+	elseif isWildBattle() then
 		return self:wildBattle()
 	else
 		return self:trainerBattle()

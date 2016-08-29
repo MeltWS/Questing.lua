@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright ï¿½ 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -123,14 +123,13 @@ end
 
 function toMauville:SlateportCity()
 	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Slateport" then
-		 moveToCell(32,25)
+		return moveToCell(32,25)
 	elseif not hasItem("Devon Goods") then 
-		moveToMap("Route 110")
+		return moveToMap("Route 110")
 	elseif not dialogs.ingenieur.state and not dialogs.devonVic.state then 
-		log("lol")
-		moveToCell(39,54)
+		return moveToCell(39,54)
 	elseif dialogs.ingenieur.state then 
-		moveToCell(55,38)
+		return moveToCell(55,38)
 	else moveToMap("Route 110")
 	end
 	
@@ -138,8 +137,9 @@ end
 
 function toMauville:SlateportShipyard1F()
 	if not dialogs.ingenieur.state then 
-		talkToNpcOnCell(5,6)
-	else moveToMap("Slateport City")
+		return talkToNpcOnCell(5,6)
+	else
+		return moveToMap("Slateport City")
 	end
 	
 end
@@ -155,21 +155,20 @@ function toMauville:SlateportMuseum1F()
 	end
 end
 
-function toMauville:SlateportMuseum2F()
-	if isNpcOnCell(11,14) then 
-		talkToNpcOnCell (11,14)
-		log("lol")
-	elseif isNpcVisible("Devon") and not dialogs.goingO.state then 
-		talkToNpc("Devon")
-		log("lel")
-	elseif dialogs.devonVic.state then 
-		moveToMap("Slateport Museum 1F")
-		dialogs.ingenieur.state = false
-	else dialogs.devonVic.state = true
-		dialogs.ingenieur.state = false
-	end
-	
-end
+ function toMauville:SlateportMuseum2F()
+    if isNpcOnCell(11,14) and game.inRectangle(9,12,12,15) then 
+        return talkToNpcOnCell (11,14)
+    elseif isNpcOnCell(11,14) and not game.inRectangle(9,12,12,15) then 
+        return talkToNpcOnCell(10,16)
+    elseif isNpcVisible("Devon") and not dialogs.goingO.state then 
+        return talkToNpc("Devon")
+    elseif dialogs.devonVic.state then 
+        dialogs.ingenieur.state = false
+        return moveToMap("Slateport Museum 1F")
+    else dialogs.devonVic.state = true
+        dialogs.ingenieur.state = false
+    end
+end 
 
 function toMauville:Route110()
 	if self:needPokecenter() then

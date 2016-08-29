@@ -82,7 +82,7 @@ end
 
 function meetKyogre:Route127()
 	if game.tryTeachMove("Dive", "HM06 - Dive") then
-		for i=1, 6, 1 do
+		for i=1, getTeamSize(), 1 do
 			if hasMove(i, "Dive") then
 				pushDialogAnswer(1)
 				pushDialogAnswer(i)

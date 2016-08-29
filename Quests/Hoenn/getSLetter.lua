@@ -76,15 +76,15 @@ function getSLetter:RustboroCity()
 	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Rustboro City" then
 		return moveToMap("Pokecenter Rustboro City")
 	elseif isNpcOnCell(52,20) and not dialogs.devCheck.state then
-		log("dd")
-		talkToNpcOnCell (52,20) 
+		return talkToNpcOnCell(52,20) 
 	elseif isNpcOnCell(52,20) and  dialogs.devCheck.state and not dialogs.Peeko.state then 
-		moveToMap("Route 116")
+		return moveToMap("Route 116")
 	elseif dialogs.Peeko.state and isNpcOnCell(52,20) then
-		talkToNpcOnCell (52,20)
+		return talkToNpcOnCell(52,20)
 	elseif not isNpcOnCell(52,20) and not dialogs.Steven.state then
-		moveToMap("Devon Corporation 1F")
-	else moveToMap("Route 104")
+		return moveToMap("Devon Corporation 1F")
+	else
+		return moveToMap("Route 104")
 	end
 end
 
