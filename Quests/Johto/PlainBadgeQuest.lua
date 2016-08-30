@@ -12,7 +12,7 @@ local Dialog = require "Quests/Dialog"
 
 local name		  = 'Plain Badge Quest'
 local description = ' Plain Badge'
-local level = 20
+local level = 23
 
 local PlainBadgeQuest = Quest:new()
 

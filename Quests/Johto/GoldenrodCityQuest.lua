@@ -290,11 +290,11 @@ function GoldenrodCityQuest:new()
 end
 
 function GoldenrodCityQuest:isDoable()
-	return self:hasMap() and not hasItem("Plain Badge")
+	return self:hasMap() and isNpcOnCell(48,34)
 end
 
 function GoldenrodCityQuest:isDone()
-	return hasItem("Plain Badge")
+	return not isNpcOnCell(48,34)
 end
 
 function GoldenrodCityQuest:PokecenterGoldenrod()
@@ -447,7 +447,7 @@ function GoldenrodCityQuest:UndergroundWarehouse()
 	if dialogs.UndergroundWarehouseFinish.state then
 		return moveToMap("Goldenrod Underground Basement") -- reset the first time. Anti stuck, dialogs only run one time.
 	elseif dialogs.UndergroundWarehouseStart.state then 
-		dialogs.UndergroundWarehouseStart = false
+		dialogs.UndergroundWarehouseStart.state = false
 		return moveToMap("Goldenrod Mart B1F")
 	else 
 		local NPCx = UndergroundCratesNPC[current][1]
@@ -488,6 +488,10 @@ function GoldenrodCityQuest:GoldenrodUndergroundBasement() -- open full path in 
 	end
 	if not isNpcOnCell(5,4) then
 		dialogs.UndergroundDefeated.state = true -- NPC vanish, we set it in case of DC
+		if isNpcOnCell(18,18) then
+			pushDialogAnswer(1)
+			return talkToNpc("Lever F")
+		end
 		return moveToMap("Goldenrod Underground Path")
 	elseif not isNpcOnCell(4,10) then
 		return talkToNpcOnCell(5,4)
@@ -506,9 +510,6 @@ function GoldenrodCityQuest:GoldenrodUndergroundBasement() -- open full path in 
 	elseif not dialogs.LeverE.state then
 		pushDialogAnswer(1)
 		return talkToNpc("Lever E")				
-	elseif not dialogs.LeverF.state then
-		pushDialogAnswer(1)
-		return talkToNpc("Lever F")	
 	end
 end
 return GoldenrodCityQuest

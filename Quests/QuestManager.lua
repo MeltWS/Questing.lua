@@ -69,7 +69,7 @@ local MagmaHideout			     = require('Quests/Hoenn/MagmaHideout')
 local ToMossdeepCity			 = require('Quests/Hoenn/ToMossdeepCity')
 local meetKyogre			     = require('Quests/Hoenn/meetKyogre')
 local beatDeoxys				 = require('Quests/Hoenn/beatDeoxys')
--- local e4Hoenn					 = require('Quests/Hoenn/e4Hoenn')
+local e4Hoenn					 = require('Quests/Hoenn/e4Hoenn')
 
 local quests = {
 	-- Kanto Quests
@@ -135,7 +135,7 @@ local quests = {
 	ToMossdeepCity:new(),
 	meetKyogre:new(),
 	beatDeoxys:new(),
-	-- e4Hoenn:new()
+	e4Hoenn:new()
 }
 
 function QuestManager:new(o)
